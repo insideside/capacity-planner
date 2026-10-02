@@ -189,7 +189,7 @@
 <div class="ov" id="ovUpload"><div class="modal" style="width:520px">
   <h2>Загрузить конфигурацию</h2>
   <div class="hint">Файл JSON, скачанный кнопкой «Скачать конфигурацию» (формат <code>capacity-planner/v1</code>).
-    Также принимается HTML-файл старой версии планировщика со встроенными данными («💾 Сохранить» в однофайловой версии) и «голый» массив периодов.</div>
+    Также принимается HTML-файл однофайловой версии планировщика — исходный или сохранённый кнопкой «💾 Сохранить», — и «голый» массив периодов.</div>
   <div class="mr"><label>Файл</label><input type="file" id="uploadFile" accept=".json,.html,.htm,application/json,text/html"></div>
   <div class="mr" style="flex-direction:column;align-items:flex-start;gap:4px">
     <label style="min-width:auto"><input type="radio" name="uploadMode" value="over" checked> Поверх текущего проекта — с окном разрешения конфликтов</label>
@@ -278,6 +278,7 @@
 <script src="/shared/validate.js"></script>
 <script src="/shared/ops.js"></script>
 <script src="/shared/diff.js"></script>
+<script src="/shared/legacy.js"></script>
 <script src="/js/planner.js"></script>
 <script src="/js/app.js"></script>
 </body>

@@ -18,6 +18,7 @@ const Ops = require('../shared/ops');
 const Diff = require('../shared/diff');
 const Calc = require('../shared/calc');
 const Validate = require('../shared/validate');
+const Legacy = require('../shared/legacy');
 
 let passed = 0;
 let failed = 0;
@@ -110,6 +111,29 @@ async function unit() {
     assert.strictEqual(items.length, 1);
     assert.deepStrictEqual(items[0].fields, ['st']);
   });
+
+  console.log('Импорт из однофайлового HTML');
+  await test('исходный HTML (IMPORTED_*): две связанные версии, галочки по rel', () => {
+    const html = '<script>var IMPORTED_RES={core:{label:"Ядро",n:1,pct:100,period:"dev",color:"#2255e2"}};\n'
+      + 'var IMPORTED_TASKS=[\n{w:"1",n:"Блок",h:0,r:"none",s:true,d:0,rel:null},\n{w:"1.1",n:\'Задача "А"\',h:8,r:"core",s:false,d:1,rel:"322"},\n{w:"1.2",n:"Б",h:4,r:"core",s:false,d:1,rel:"323"},\n];// комментарий\n'
+      + "var IMPORTED_DATES_322={devStart:'2026-06-01',devEnd:'2026-11-06',tstStart:'2026-07-01',tstEnd:'2026-12-20'};\n"
+      + "var IMPORTED_DATES_323={devStart:'2026-06-01',devEnd:'2026-11-15',tstStart:'2026-06-01',tstEnd:'2026-12-20'};</script>";
+    const r = Legacy.parseLegacyHtml(html);
+    assert.deepStrictEqual(r.periods.map((p) => p.name), ['3.2.2', '3.2.3']);
+    assert.strictEqual(r.periods[0].linkedTo, r.periods[1].id);
+    assert.strictEqual(r.periods[0].tasks[1].n, 'Задача "А"');
+    assert.deepStrictEqual([r.periods[0].chk['1.1'], r.periods[0].chk['1.2'], r.periods[1].chk['1.2']], [true, false, true]);
+    assert.deepStrictEqual(Validate.validatePeriods(r.periods), []);
+  });
+  await test('исходный HTML: код из файла не выполняется', () => {
+    assert.throws(() => Legacy.parseLegacyHtml('<script>var IMPORTED_RES={a:alert(1)};var IMPORTED_TASKS=[];var IMPORTED_DATES_1={};</script>'), /не является данными/);
+  });
+  if (fs.existsSync(path.join(__dirname, '..', 'capacity_planner-000.html')) && REAL_SEED) {
+    await test('исходный capacity_planner-000.html разбирается ровно в сид', () => {
+      const r = Legacy.parseLegacyHtml(fs.readFileSync(path.join(__dirname, '..', 'capacity_planner-000.html'), 'utf8'));
+      assert.strictEqual(JSON.stringify(r.periods), JSON.stringify(REAL_SEED.periods));
+    });
+  }
 
   console.log('Отвязка версий (4.7)');
   await test('отвязка 3.2.3 от 3.2.2 по точному правилу', () => {

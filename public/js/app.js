@@ -375,10 +375,9 @@ function readUploadFile(){
         var text=String(r.result).replace(/^﻿/,'').trim();
         var obj;
         if(text.charAt(0)==='<'){
-          // HTML однофайловой версии со вшитым состоянием
-          var m=/window\.CP_SAVED_STATE=([\s\S]*?);<\/script>/.exec(text);
-          if(!m)throw new Error('В HTML-файле нет встроенных данных (CP_SAVED_STATE)');
-          obj={schema:CPValidate.SCHEMA,name:f.name.replace(/\.[^.]+$/,''),periods:JSON.parse(m[1])};
+          // HTML однофайловой версии: исходный (IMPORTED_*) или сохранённый (CP_SAVED_STATE); код файла не выполняется
+          var lg=CPLegacy.parseLegacyHtml(text);
+          obj={schema:CPValidate.SCHEMA,name:f.name.replace(/\.[^.]+$/,''),periods:lg.periods};
         }else obj=JSON.parse(text);
         var parsed=CPValidate.parseProjectFile(obj);
         if(parsed.errors.length)throw new Error('Файл не прошёл проверку:\n'+parsed.errors.slice(0,5).join('\n'));
