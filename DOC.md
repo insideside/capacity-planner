@@ -283,7 +283,7 @@
 
 ### 3.1a. Установка с GitHub
 
-Репозиторий: **https://github.com/insideside/capacity-planner** (приватный). В нём только код и документация.
+Репозиторий: **https://github.com/insideside/capacity-planner** (публичный). В нём только код и документация.
 Данные проектов, пользователи, `config.json`, `.env` и стартовые данные в репозиторий не входят,
 поэтому после установки приложение пустое.
 
@@ -292,8 +292,8 @@
 | Linux / macOS | `git clone https://github.com/insideside/capacity-planner.git && cd capacity-planner && ./install.sh` | `./start.sh` |
 | Windows | `git clone https://github.com/insideside/capacity-planner.git`, затем `cd capacity-planner` и `install.bat` | `start.bat` |
 
-Доступ к приватному репозиторию: на сервере выполните `gh auth login` (GitHub CLI) или клонируйте
-по HTTPS с персональным токеном (scope `repo`). Тот же доступ нужен для обновления из приложения.
+Репозиторий публичный: для клонирования и обновления из приложения авторизация на GitHub не нужна,
+серверу достаточно доступа в интернет к github.com по HTTPS.
 
 Что делает установщик (`install.sh`, `install.ps1`, `install.bat`):
 1. Проверяет наличие git, Node.js 18+ и npm.
