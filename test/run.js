@@ -354,6 +354,18 @@ async function apiTests() {
       assert.strictEqual((await user.req('GET', `/api/projects/${pid}`)).status, 404);
       assert.strictEqual((await user.req('GET', '/api/users')).status, 403);
     });
+    await test('формат логина: o.kakutina и кириллица — да, смешанная раскладка — нет', async () => {
+      for (const login of ['o.kakutina', 'O.Kakutina2', 'о.какутина', 'ivan_petrov@corp']) {
+        const r = await admin.req('POST', '/api/users', { login, password: 'pass-12345' });
+        assert.strictEqual(r.status, 200, login + ': ' + JSON.stringify(r.data));
+      }
+      const mixed = await admin.req('POST', '/api/users', { login: 'о.kakutina', password: 'pass-12345' }); // первая «о» русская
+      assert.strictEqual(mixed.status, 400);
+      assert.match(mixed.data.message, /раскладк/);
+      assert.strictEqual((await admin.req('POST', '/api/users', { login: 'o kakutina', password: 'pass-12345' })).status, 400);
+      assert.strictEqual((await admin.req('POST', '/api/users', { login: 'O.KAKUTINA', password: 'pass-12345' })).status, 400); // уже есть (регистр не важен)
+      assert.strictEqual((await new Client(base).login('O.Kakutina', 'pass-12345')).status, 200);
+    });
     await test('право «чтение»: читать можно, писать нельзя', async () => {
       await admin.req('PUT', `/api/users/${uid}`, { perms: { [pid]: 'read' } });
       const p = await user.req('GET', `/api/projects/${pid}`);

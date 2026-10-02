@@ -258,7 +258,17 @@ app.post('/api/auth/password', async (req, res) => {
 });
 
 // ── users (admin) ─────────────────────────────────────
-const RE_LOGIN = /^[A-Za-z0-9._@-]{2,40}$/;
+// Логин: буквы (латиница или кириллица), цифры и . _ @ - , например o.kakutina или о.какутина.
+// Смешение русских и латинских букв запрещено — обычно это опечатка раскладки, и войти потом не получится.
+const RE_LOGIN = /^[\p{L}\p{N}._@-]{2,40}$/u;
+function loginError(login) {
+  if (typeof login !== 'string' || !login.trim()) return 'Укажите логин';
+  if (/\s/.test(login)) return 'Логин не должен содержать пробелов';
+  if (!RE_LOGIN.test(login)) return 'Логин: 2–40 символов — буквы, цифры и . _ @ - (например, o.kakutina)';
+  if (/[A-Za-z]/.test(login) && /[А-Яа-яЁё]/.test(login)) return 'В логине смешаны русские и латинские буквы — проверьте раскладку клавиатуры';
+  if (/[^A-Za-zА-Яа-яЁё0-9._@-]/.test(login)) return 'Логин: используйте латиницу или кириллицу, цифры и . _ @ -';
+  return null;
+}
 function cleanPerms(perms) {
   const out = {};
   for (const [pid, a] of Object.entries(perms || {})) if (store.getProject(pid) && (a === 'read' || a === 'edit')) out[pid] = a;
@@ -268,7 +278,7 @@ const adminCount = () => users().filter((u) => u.role === 'admin').length;
 app.get('/api/users', requireAdmin, (req, res) => res.json({ users: users().map(publicUser) }));
 app.post('/api/users', requireAdmin, async (req, res) => {
   const { login, password, role, perms } = req.body || {};
-  if (typeof login !== 'string' || !RE_LOGIN.test(login)) return bad(res, 'Логин: 2–40 символов (латиница, цифры, . _ @ -)');
+  if (loginError(login)) return bad(res, loginError(login));
   if (users().some((u) => u.login.toLowerCase() === login.toLowerCase())) return bad(res, 'Такой логин уже существует');
   if (typeof password !== 'string' || password.length < 8) return bad(res, 'Пароль — не короче 8 символов');
   const u = {
@@ -284,7 +294,7 @@ app.put('/api/users/:uid', requireAdmin, async (req, res) => {
   if (!u) return res.status(404).json({ error: 'not_found', message: 'Пользователь не найден' });
   const { role, password, perms, login } = req.body || {};
   if (login !== undefined && login !== u.login) {
-    if (typeof login !== 'string' || !RE_LOGIN.test(login)) return bad(res, 'Некорректный логин');
+    if (loginError(login)) return bad(res, loginError(login));
     if (users().some((x) => x.id !== u.id && x.login.toLowerCase() === login.toLowerCase())) return bad(res, 'Такой логин уже существует');
     u.login = login;
   }
