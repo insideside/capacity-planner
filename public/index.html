@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Планировщик ёмкости</title>
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<!-- ВХОД -->
+<div class="login-wrap" id="loginScreen">
+  <form class="login-box" id="loginForm" autocomplete="on">
+    <h1>Планировщик ёмкости</h1>
+    <div class="sub">Войдите, чтобы продолжить</div>
+    <input type="text" id="loginName" placeholder="Логин" autocomplete="username" required>
+    <input type="password" id="loginPass" placeholder="Пароль" autocomplete="current-password" required>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn btnp" type="submit" id="btnLogin">Войти</button>
+  </form>
+</div>
+
+<div class="page">
+<div class="print-hdr" id="printHdr"></div>
+
+<!-- ПРОЕКТ -->
+<div class="projbar" id="projBar">
+  <span class="lbl">Проект:</span>
+  <select id="projSel" title="Переключить проект"></select>
+  <button class="btn ro-hide" id="btnProjRename" title="Переименовать проект">✎</button>
+  <button class="btn admin-only" id="btnProjNew" title="Создать проект">+ Проект</button>
+  <button class="btn btnd admin-only" id="btnProjDelete" title="Удалить проект">🗑</button>
+  <span class="sstat" id="saveStatus">—</span>
+  <span class="grow"></span>
+  <button class="btn admin-only" id="btnUsers">👥 Пользователи</button>
+  <button class="btn admin-only" id="btnUpdate" title="Обновление приложения из git">⟳ Обновление</button>
+  <span class="user-chip" id="userChip"></span>
+  <button class="btn" id="btnChangePwd" title="Сменить пароль">🔑</button>
+  <button class="btn" id="btnLogout">Выйти</button>
+</div>
+
+<!-- SAVE BAR -->
+<div class="savebar">
+  <div class="ta"><h1>Планировщик ёмкости</h1><div class="sub">Двойной клик — редактировать · Перетаскивание — сортировка · Изменения сохраняются на сервере автоматически</div></div>
+  <button class="btn ro-hide" id="btnUndo" title="Отменить (0 шагов)  Ctrl+Z" style="font-family:monospace">↩ Ctrl+Z</button>
+  <button class="btn ro-hide" id="btnRedo" title="Повторить (0 шагов)  Ctrl+Shift+Z / Ctrl+Y" style="font-family:monospace">↪ Ctrl+Y</button>
+  <button class="btn" id="btnSave" title="Скачать конфигурацию проекта (JSON)">💾 Скачать конфигурацию</button>
+  <button class="btn ro-hide" id="btnLoad" title="Загрузить конфигурацию (JSON) поверх проекта или как новый проект">📂 Загрузить конфигурацию</button>
+  <button class="btn ro-hide" id="btnImportGlobal">⬆ Импорт CSV</button>
+  <button class="btn" id="btnExportGlobal">⬇ Экспорт CSV</button>
+  <button class="btn" style="background:#dc2626;color:#fff;border-color:#dc2626" id="btnPdf">⬇ PDF</button>
+  <button class="btn btnd ro-hide" id="btnReset">↺ Сбросить</button>
+</div>
+
+<div class="empty" id="emptyState" style="display:none"></div>
+<div id="periodsContainer"></div>
+<button class="add-period-btn" id="btnAddPeriod">+ Добавить период планирования</button>
+
+<!-- MODAL: Добавить задачу -->
+<div class="ov" id="ovAdd"><div class="modal">
+  <h2>Добавить задачу</h2>
+  <div class="mr"><label>Период</label><select id="addPeriodSel"></select></div>
+  <div class="mr"><label>Родитель</label><select id="addParent"></select></div>
+  <div class="mr"><label>Название</label><input type="text" id="addName" placeholder="Название задачи" maxlength="150"></div>
+  <div class="mr"><label>Часы</label><input type="number" id="addHours" value="40" min="0" max="9999" style="width:70px;flex:none">
+    <label style="min-width:auto;margin-left:8px">Ресурс</label><select id="addRes"></select></div>
+  <div class="mbtns">
+    <button class="btn" id="btnAddCancel">Отмена</button>
+    <button class="btn btnp" id="btnAddOk">Добавить</button>
+  </div>
+</div></div>
+
+<!-- MODAL: Добавить блок -->
+<div class="ov" id="ovAddParent"><div class="modal" style="width:420px">
+  <h2>Добавить блок задач</h2>
+  <div class="mr"><label>Период</label><select id="apPeriodSel"></select></div>
+  <div class="mr"><label>Название</label><input type="text" id="addParentName" placeholder="Название блока" maxlength="150"></div>
+  <div class="mbtns">
+    <button class="btn" id="btnAddParentCancel">Отмена</button>
+    <button class="btn btnp" id="btnAddParentOk">Добавить блок</button>
+  </div>
+</div></div>
+
+<!-- MODAL: Редактировать -->
+<div class="ov" id="ovEdit"><div class="modal" style="width:520px">
+  <h2>Редактировать</h2>
+  <div class="mr"><label>Название</label><input type="text" id="editName" maxlength="150"></div>
+  <div class="mr" id="editHoursRow"><label>Часы</label><input type="number" id="editHours" min="0" max="9999" style="width:80px;flex:none"></div>
+  <div class="mr" id="editResRow"><label>Ресурс</label><select id="editRes"></select></div>
+  <div class="mr" id="editStRow"><label>Статус</label>
+    <select id="editSt" style="flex:none;width:110px"><option value="new">Новое</option><option value="wip">В работе</option><option value="done">Выполнено</option></select>
+    <label style="min-width:auto;margin-left:6px">начато</label><input type="date" id="editWs" style="flex:none">
+    <label style="min-width:auto;margin-left:6px">выполнено</label><input type="date" id="editDn" style="flex:none"></div>
+  <div class="mr" id="editParentRow"><label>Родитель</label><select id="editParent"></select></div>
+  <div class="mr" id="editMakeSummaryRow">
+    <label style="min-width:auto"></label>
+    <button class="btn btnv" id="btnMakeSummary" style="font-size:11px">▶ Сделать группирующим</button><button class="btn" id="btnMakeLeaf" style="font-size:11px;display:none;margin-left:6px">◀ Сделать задачей</button>
+  </div>
+  <div class="mr" id="editMoveRow" style="background:#fff8e1;border-radius:6px;padding:7px;flex-direction:column;align-items:stretch;gap:5px">
+    <div style="font-size:12px;font-weight:700;color:#b45309;margin-bottom:2px">Перенести / скопировать в другой период</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <select id="editMovePeriod" style="flex:1"></select>
+      <select id="editMoveParent" style="flex:1"></select>
+    </div>
+    <div style="display:flex;gap:5px">
+      <button class="btn" id="btnMoveCopy" style="flex:1">Копировать →</button>
+      <button class="btn btnd" id="btnMoveMove" style="flex:1">Перенести →</button>
+    </div>
+  </div>
+  <input type="hidden" id="editPid"><input type="hidden" id="editIdx">
+  <div class="mbtns">
+    <button class="btn" id="btnEditCancel">Отмена</button>
+    <button class="btn btnp" id="btnEditOk">Сохранить</button>
+  </div>
+</div></div>
+
+<!-- MODAL: Добавить ресурс -->
+<div class="ov" id="ovRes"><div class="modal" style="width:400px">
+  <h2>Новый ресурс</h2>
+  <input type="hidden" id="resPidTarget">
+  <div class="mr"><label>Ключ</label><input type="text" id="resKey" placeholder="myres" maxlength="20" style="font-family:monospace"></div>
+  <div class="mr"><label>Название</label><input type="text" id="resLabel" placeholder="Название" maxlength="60"></div>
+  <div class="mr"><label>Человек</label><input type="number" id="resN" value="1" min="1" max="50" style="width:56px;flex:none">
+    <label style="min-width:auto;margin-left:6px">%</label><input type="number" id="resPct" value="100" min="10" max="500" style="width:60px;flex:none"></div>
+  <div class="mr"><label>Период</label><select id="resPeriod"><option value="dev">Разработка</option><option value="tst">Тестирование</option></select></div>
+  <div class="mr"><label>Цвет</label><input type="color" id="resColor" value="#0969da" style="width:44px;flex:none;padding:2px;border-radius:4px"></div>
+  <div class="mbtns"><button class="btn" id="btnResCancel">Отмена</button><button class="btn btnp" id="btnResOk">Добавить</button></div>
+</div></div>
+
+<!-- MODAL: Добавить период -->
+<div class="ov" id="ovAddPeriod"><div class="modal" style="width:440px">
+  <h2>Добавить период</h2>
+  <div class="mr"><label>Название</label><input type="text" id="newPeriodName" placeholder="Релиз 2027 1п" maxlength="80"></div>
+  <div class="mr"><label>Связать с</label>
+    <select id="newPeriodLink">
+      <option value="">— без связи (независимый)</option>
+    </select>
+  </div>
+  <div class="link-info" id="linkInfo" style="display:none">
+    При связи задачи синхронизируются между периодами: галочка в одном = отжата в другом.
+    Можно связать только два периода. Если выбранный уже связан — связь переключится на новый.
+  </div>
+  <div class="mbtns"><button class="btn" id="btnAddPeriodCancel">Отмена</button><button class="btn btnp" id="btnAddPeriodOk">Создать</button></div>
+</div></div>
+
+<!-- MODAL: Подтверждение -->
+<div class="ov" id="ovConfirm"><div class="modal" style="width:360px">
+  <h2 id="confirmTitle">Подтверждение</h2>
+  <p id="confirmMsg" style="font-size:13px;margin-bottom:14px;line-height:1.5"></p>
+  <div class="mbtns"><button class="btn" id="btnConfirmNo">Отмена</button><button class="btn btnp" id="btnConfirmYes">Подтвердить</button></div>
+</div></div>
+
+<!-- MODAL: Импорт -->
+<div class="ov" id="ovImport"><div class="modal" style="width:550px">
+  <h2>Импорт данных</h2>
+  <div class="tabs">
+    <button class="tab on" id="tabFullBtn">Полный CSV</button>
+    <button class="tab" id="tabTasksBtn">Только задачи</button>
+  </div>
+  <div class="tp on" id="tpFull">
+    <div class="hint">Загружает файл из <b>Экспорт CSV</b> — восстанавливает все периоды. Поддерживается формат v2 (один период).</div>
+    <div class="mr" style="flex-direction:column;align-items:stretch"><textarea id="csvFullInput" style="min-height:110px" placeholder="Вставьте CSV или выберите файл..."></textarea></div>
+    <div class="mr"><label style="min-width:auto">Файл:</label><input type="file" id="csvFile" accept=".csv,.txt"></div>
+  </div>
+  <div class="tp" id="tpTasks">
+    <div class="hint">Добавить задачи: <code>WBS ; Название ; Часы ; Ресурс</code></div>
+    <div class="mr" style="flex-direction:column;align-items:stretch"><textarea id="csvTasksInput" placeholder="3.1 ; Новая задача ; 80 ; core"></textarea></div>
+    <div class="mr"><label>В период</label><select id="importPeriodSel"></select></div>
+    <div class="mr"><label>Блок по умолч.</label><select id="importParent"></select></div>
+  </div>
+  <div id="importPreview" style="margin-top:7px;font-size:11px"></div>
+  <div class="mbtns">
+    <button class="btn" id="btnImportCancel">Отмена</button>
+    <button class="btn" id="btnPreview">Предпросмотр</button>
+    <button class="btn btnp" id="btnImportOk">Импортировать</button>
+  </div>
+</div></div>
+
+<!-- MODAL: Проект (создать / переименовать) -->
+<div class="ov" id="ovProject"><div class="modal" style="width:440px">
+  <h2 id="projModalTitle">Новый проект</h2>
+  <div class="mr"><label>Название</label><input type="text" id="projName" maxlength="200" placeholder="Название проекта"></div>
+  <div class="mr" id="projSeedRow"><label>Содержимое</label>
+    <select id="projSeed"><option value="empty">Пустой проект (один период)</option><option value="seed">Копия стартовых данных «Релиз 2026»</option></select></div>
+  <div class="mbtns"><button class="btn" id="btnProjCancel">Отмена</button><button class="btn btnp" id="btnProjOk">Сохранить</button></div>
+</div></div>
+
+<!-- MODAL: Загрузка конфигурации -->
+<div class="ov" id="ovUpload"><div class="modal" style="width:520px">
+  <h2>Загрузить конфигурацию</h2>
+  <div class="hint">Файл JSON, скачанный кнопкой «Скачать конфигурацию» (формат <code>capacity-planner/v1</code>).
+    Также принимается HTML-файл старой версии планировщика со встроенными данными («💾 Сохранить» в однофайловой версии) и «голый» массив периодов.</div>
+  <div class="mr"><label>Файл</label><input type="file" id="uploadFile" accept=".json,.html,.htm,application/json,text/html"></div>
+  <div class="mr" style="flex-direction:column;align-items:flex-start;gap:4px">
+    <label style="min-width:auto"><input type="radio" name="uploadMode" value="over" checked> Поверх текущего проекта — с окном разрешения конфликтов</label>
+    <label style="min-width:auto" class="admin-only"><input type="radio" name="uploadMode" value="new"> Как новый проект</label>
+  </div>
+  <div id="uploadInfo" class="notice"></div>
+  <div class="mbtns"><button class="btn" id="btnUploadCancel">Отмена</button><button class="btn btnp" id="btnUploadOk">Загрузить</button></div>
+</div></div>
+
+<!-- MODAL: Разрешение конфликтов -->
+<div class="ov" id="ovConflict" data-sticky="1"><div class="modal wide">
+  <h2 id="cfTitle">Разрешение конфликтов</h2>
+  <div class="hint" id="cfHint"></div>
+  <div class="cf-sum" id="cfSum"></div>
+  <div class="cf-sum">
+    <button class="btn" id="btnCfAllCur">Всё — <span class="cfCurName">текущее</span></button>
+    <button class="btn" id="btnCfAllFile">Всё — <span class="cfFileName">из файла</span></button>
+    <label style="font-size:11px;color:#656d76;margin-left:8px"><input type="checkbox" id="cfShowView"> показывать служебные пункты (свёртка, фильтры)</label>
+  </div>
+  <div id="cfBody"></div>
+  <div class="notice">Пункты, которых нет в списке, совпадают и остаются без изменений.</div>
+  <div class="mbtns"><button class="btn" id="btnCfCancel">Отмена</button><button class="btn btnp" id="btnCfApply">Применить</button></div>
+</div></div>
+
+<!-- MODAL: Отвязка версии -->
+<div class="ov" id="ovDetach"><div class="modal" style="width:600px">
+  <h2>Отвязать версию</h2>
+  <div class="mr"><label>Действие</label><select id="detachDir"></select></div>
+  <div class="hint" id="detachRule"></div>
+  <div class="mr"><label style="min-width:auto"><input type="checkbox" id="detachInactive"> Также удалить снятые задачи, которые <b>не активны</b> в исходной версии (или отсутствуют в ней)</label></div>
+  <div id="detachPreview" style="font-size:12px"></div>
+  <div class="mbtns"><button class="btn" id="btnDetachCancel">Отмена</button><button class="btn btnd" id="btnDetachOk">Отвязать</button></div>
+</div></div>
+
+<!-- MODAL: Пользователи (админ) -->
+<div class="ov" id="ovUsers"><div class="modal" style="width:min(1100px,96vw)">
+  <h2>Пользователи и права</h2>
+  <div class="hint">Администратор имеет полный доступ ко всем проектам. Для остальных права задаются по каждому проекту: <b>нет доступа</b> / <b>чтение</b> / <b>редактирование</b>. Изменения применяются сразу.</div>
+  <div class="ut-wrap"><table class="ut" id="usersTable"></table></div>
+  <div class="sec">Новый пользователь</div>
+  <div class="mr">
+    <input type="text" id="nuLogin" placeholder="Логин" maxlength="40" style="flex:1">
+    <input type="password" id="nuPass" placeholder="Пароль (мин. 8 символов)" autocomplete="new-password" style="flex:1">
+    <select id="nuRole" style="flex:none"><option value="user">Пользователь</option><option value="admin">Администратор</option></select>
+    <button class="btn btnp" id="btnNuAdd">Создать</button>
+  </div>
+  <div class="notice">Новому пользователю будет предложено сменить пароль при первом входе.</div>
+  <div class="mbtns"><button class="btn" id="btnUsersClose">Закрыть</button></div>
+</div></div>
+
+<!-- MODAL: Обновление из git (админ) -->
+<div class="ov" id="ovUpdate"><div class="modal" style="width:620px">
+  <h2>Обновление приложения</h2>
+  <div class="hint">Код приложения обновляется из git-репозитория, из которого оно установлено. Данные проектов, пользователи,
+    <code>config.json</code> и <code>.env</code> не затрагиваются. После обновления сервер перезапустится, пользователям хватит обновить страницу.</div>
+  <div id="updBody" style="font-size:12px;line-height:1.6"></div>
+  <div class="mbtns">
+    <button class="btn" id="btnUpdClose">Закрыть</button>
+    <button class="btn" id="btnUpdCheck">Проверить снова</button>
+    <button class="btn btng" id="btnUpdApply" disabled>Обновить и перезапустить</button>
+  </div>
+</div></div>
+
+<!-- MODAL: Смена пароля -->
+<div class="ov" id="ovPassword" data-sticky="1"><div class="modal" style="width:400px">
+  <h2>Смена пароля</h2>
+  <div class="hint" id="pwdHint" style="display:none">Это первый вход — задайте собственный пароль.</div>
+  <div class="mr"><label>Текущий</label><input type="password" id="pwdOld" autocomplete="current-password"></div>
+  <div class="mr"><label>Новый</label><input type="password" id="pwdNew" autocomplete="new-password" placeholder="не короче 8 символов"></div>
+  <div class="mr"><label>Повтор</label><input type="password" id="pwdNew2" autocomplete="new-password"></div>
+  <div class="login-err" id="pwdErr"></div>
+  <div class="mbtns"><button class="btn" id="btnPwdCancel">Отмена</button><button class="btn btnp" id="btnPwdOk">Сменить</button></div>
+</div></div>
+
+<!-- MODAL: Ввод значения -->
+<div class="ov" id="ovPrompt"><div class="modal" style="width:400px">
+  <h2 id="promptTitle"></h2>
+  <div class="mr"><input type="text" id="promptInput"></div>
+  <div class="mbtns"><button class="btn" id="btnPromptCancel">Отмена</button><button class="btn btnp" id="btnPromptOk">OK</button></div>
+</div></div>
+
+</div><!-- /.page -->
+<div id="toasts"></div>
+
+<script src="/shared/calc.js"></script>
+<script src="/shared/validate.js"></script>
+<script src="/shared/ops.js"></script>
+<script src="/shared/diff.js"></script>
+<script src="/js/planner.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

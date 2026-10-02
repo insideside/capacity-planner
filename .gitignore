@@ -1,0 +1,15 @@
+# зависимости и служебное
+node_modules/
+logs/
+*.pid
+.DS_Store
+
+# данные и настройки конкретной установки — в git не хранятся
+data/
+.env
+config.json
+
+# исходные материалы с реальными данными (сид генерируется локально: npm run extract-seed)
+seed/*.json
+capacity_planner*.html
+promt_*.md

@@ -1,0 +1,17 @@
+{
+  "port": 3000,
+  "host": "0.0.0.0",
+  "dataDir": "./data",
+  "sessionTtlHours": 12,
+  "secureCookies": false,
+  "trustProxy": false,
+  "maxUploadMb": 5,
+  "login": {
+    "maxAttempts": 10,
+    "windowMinutes": 15
+  },
+  "reopenRequiresAdmin": false,
+  "detachRemoveInactiveInSource": false,
+  "pollIntervalSec": 10,
+  "updateRestart": "self"
+}

@@ -1,0 +1,90 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#24292f;font-size:12px}
+.toolbar{position:sticky;top:0;z-index:5;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#fff;border-bottom:1px solid #d0d7de;padding:7px 14px;font-size:12px}
+.toolbar select{border:1px solid #d0d7de;border-radius:4px;padding:2px 6px;font-size:12px;font-family:inherit;font-weight:700}
+.toolbar label{display:flex;align-items:center;gap:4px;color:#57606a}
+.grow{flex:1}
+.upd{font-size:11px;color:#656d76}
+.btn{padding:3px 9px;border-radius:4px;border:1px solid #d0d7de;background:#fff;color:#24292f;cursor:pointer;font-size:12px;font-family:inherit;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#f3f4f6}
+.btnpdf{background:#dc2626;color:#fff;border-color:#dc2626}.btnpdf:hover{background:#b91c1c}
+.sheet{max-width:210mm;margin:14px auto;background:#fff;border:1px solid #d0d7de;border-radius:8px;padding:14mm 13mm}
+.muted{color:#8c959f}
+h1{font-size:19px;font-weight:700;color:#1f2328;margin-bottom:3px}
+.meta{font-size:11px;color:#656d76;line-height:1.6;margin-bottom:14px}
+.badge{display:inline-block;font-size:10px;border-radius:3px;padding:1px 6px;border:1px solid #fdba74;background:#fff1e6;color:#9a3412;margin-left:6px;vertical-align:middle}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.kpi{border:1px solid #d0d7de;border-radius:6px;padding:8px 10px;background:#f6f8fa}
+.kpi .v{font-size:22px;font-weight:700;color:#1f2328;line-height:1.1}
+.kpi .l{font-size:10px;color:#656d76;margin-top:2px}
+.kpi.main{background:#dafbe1;border-color:#aceebb}.kpi.main .v{color:#1a7f37}
+.bar{display:flex;height:12px;background:#eaeef2;border-radius:6px;overflow:hidden;margin:4px 0 5px}
+.bar span{display:block;height:100%}
+.c-done{background:#1a7f37}.c-wip{background:#d4a72c}.c-new{background:#d0d7de}
+.legend{display:flex;gap:14px;font-size:11px;color:#57606a;margin-bottom:16px;flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle}
+h2{font-size:12px;font-weight:700;color:#1f2328;text-transform:uppercase;letter-spacing:.4px;margin:16px 0 6px;padding-bottom:3px;border-bottom:2px solid #d0d7de}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{font-size:9.5px;font-weight:700;color:#656d76;text-transform:uppercase;text-align:right;padding:4px 5px;border-bottom:1px solid #d0d7de;background:#f6f8fa}
+th:first-child,td:first-child{text-align:left}
+td{padding:3px 5px;border-bottom:1px solid #eaeef2;text-align:right;font-variant-numeric:tabular-nums}
+tr.tot td{font-weight:700;border-top:2px solid #d0d7de;background:#f6f8fa}
+.mini{display:inline-block;width:60px;height:5px;background:#eaeef2;border-radius:3px;overflow:hidden;vertical-align:middle;margin-right:5px}
+.mini span{display:block;height:5px;background:#1a7f37}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.tl td{text-align:left}.tl td.r{text-align:right}
+.tl tr.grp td{font-weight:700;background:#fbfcfd;color:#1f2328}
+.st{font-size:9.5px;font-weight:700;border-radius:8px;padding:0 6px;border:1px solid}
+.st-new{background:#f6f8fa;color:#57606a;border-color:#d0d7de}
+.st-wip{background:#fff8c5;color:#9a6700;border-color:#e3b341}
+.st-done{background:#dafbe1;color:#1a7f37;border-color:#aceebb}
+.phases{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.phase{border:1px solid #d0d7de;border-radius:6px;padding:7px 10px}
+.phase.sel{border-color:#0969da;box-shadow:0 0 0 1px #0969da inset}
+.phase .t{display:flex;justify-content:space-between;font-size:11px;color:#57606a}
+.phase .t b{font-size:16px;color:#1f2328}
+.phase .bar{height:8px;margin:5px 0 3px}
+.phase .s{font-size:10px;color:#656d76}
+.empty{padding:30px;text-align:center;color:#656d76}
+.foot{margin-top:18px;font-size:10px;color:#8c959f;border-top:1px solid #eaeef2;padding-top:6px}
+@media(max-width:700px){.sheet{margin:0;border:none;border-radius:0;padding:16px}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  @page{size:A4 portrait;margin:12mm}
+  body{background:#fff}
+  .no-print{display:none!important}
+  .sheet{max-width:none;margin:0;border:none;padding:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  h2{break-after:avoid}
+  tr{break-inside:avoid}
+}
+/* ── По дням ── */
+.kpi.good .v{color:#1a7f37}.kpi.bad .v{color:#cf222e}
+.kpi.good{background:#f0fbf3;border-color:#aceebb}.kpi.bad{background:#fff5f4;border-color:#ffc1ba}
+.note{font-size:11px;color:#9a6700;background:#fff8c5;border:1px solid #e3b341;border-radius:4px;padding:4px 8px;margin:-2px 0 10px}
+.chart-title{font-size:11px;font-weight:700;color:#1f2328;margin:10px 0 2px}
+.chart{width:100%;position:relative;margin-bottom:4px}
+.chart svg{display:block;overflow:visible}
+.chart .ax{font-size:9.5px;fill:#656d76}
+.chart .lbl{font-size:9.5px;fill:#57606a}
+.chart .vlbl{font-size:10.5px;font-weight:700;fill:#1f2328}
+.chart .grid{stroke:#eaeef2;stroke-width:1}
+.chart .base{stroke:#d0d7de;stroke-width:1}
+.chart .scope{stroke:#8c959f;stroke-width:1}
+.chart .marker{stroke:#8c959f;stroke-width:1}
+.chart .cross{stroke:#57606a;stroke-width:1}
+.chart .l-fact{fill:none;stroke:#1a7f37;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chart .a-fact{fill:#1a7f37;fill-opacity:.1;stroke:none}
+.chart .dot-fact{fill:#1a7f37;stroke:#fff;stroke-width:2}
+.chart .l-plan{fill:none;stroke:#0969da;stroke-width:2;stroke-dasharray:6 4;stroke-linejoin:round}
+.chart .l-need{stroke:#0969da;stroke-width:1.5;stroke-dasharray:6 4}
+.chart .bar{fill:#1a7f37}
+.chart .bar-g:hover .bar{fill:#2da44e}
+.lk{display:inline-block;width:14px;height:0;border-top:2px solid;vertical-align:middle;margin-right:5px}
+.lk-fact{border-color:#1a7f37}.lk-plan{border-color:#0969da;border-top-style:dashed}
+.legend .lk{border-radius:0;height:0;width:14px}
+.tip{display:none;position:fixed;z-index:20;background:#fff;border:1px solid #d0d7de;border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12);padding:6px 9px;font-size:11px;line-height:1.6;pointer-events:none;color:#57606a}
+.tip b{color:#1f2328}
+table.days td.neg{color:#cf222e}table.days td.pos{color:#1a7f37}
+table.days tr.act td{font-weight:600}
+table.days tr.dtasks td{text-align:left;font-size:10px;color:#57606a;font-weight:400;padding:1px 5px 5px 18px;border-bottom:1px solid #eaeef2}
+@media print{.tip{display:none!important}.chart svg{width:100%}}

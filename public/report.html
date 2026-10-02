@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Отчёт о выполнении релиза</title>
+<link rel="stylesheet" href="/css/report.css">
+</head>
+<body>
+<div class="toolbar no-print">
+  <a class="btn" href="/" id="backLink">← Планировщик</a>
+  <label>Версия: <select id="verSel"></select></label>
+  <label>Готовность: <select id="phaseSel"><option value="all">Все задачи</option><option value="dev">Разработка</option><option value="tst">Тестирование</option></select></label>
+  <label><input type="checkbox" id="optAllDays"> все рабочие дни в таблице</label>
+  <label><input type="checkbox" id="optWip" checked> задачи в работе</label>
+  <label><input type="checkbox" id="optNew" checked> не начатые</label>
+  <label><input type="checkbox" id="optDone"> выполненные</label>
+  <span class="grow"></span>
+  <span class="upd" id="updInfo"></span>
+  <button class="btn btnpdf" id="btnPdf">⬇ PDF</button>
+</div>
+<div class="sheet" id="report"><div class="muted">Загрузка…</div></div>
+<script src="/shared/calc.js"></script>
+<div id="chartTip" class="tip"></div>
+<script src="/js/report-daily.js"></script>
+<script src="/js/report.js"></script>
+</body>
+</html>
