@@ -31,7 +31,7 @@ function mkPeriod(name,tasks,res){
   return{id:id,name:name||'Период '+(PERIODS.length+1),
     devStart:'2026-06-01',devEnd:'2026-11-15',tstStart:'2026-06-01',tstEnd:'2026-12-20',
     res:r,tasks:t,chk:chk,collapsed:{},filter:null,filterActive:null,folded:false,linkedTo:null,
-    colWidths:{cb:32,h:46,r:98,name:0,del:18},closed:false};  // 0 = flex
+    colWidths:{cb:32,h:46,r:98,name:0,del:26},closed:false};  // 0 = flex
 }
 // Состояние загружается с сервера (app.js). Никакого localStorage.
 var PERIODS=[];
@@ -302,7 +302,8 @@ function buildPeriodEl(p,dups){
     +'<th style="width:'+colW.r+'px" class="resizable" data-col="r" data-pid="'+p.id+'">Ресурс</th>'
     +'<th>Задача</th>'
     +'<th style="width:'+(colW.st||96)+'px">Статус</th>'
-    +'<th style="width:'+colW.del+'px"></th>'
+    // в сохранённых версиях del бывает 18 — кнопке «✕» этого мало, она вылезала за край панели
+    +'<th style="width:'+Math.max(colW.del||0,26)+'px"></th>'
     +'</tr></thead>'
     +'<tbody id="tbody-'+p.id+'"></tbody>'
     +'</table></div></div>'

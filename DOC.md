@@ -191,7 +191,7 @@
                    "res": { "core": { "label": "Разработчики ядра", "n": 3, "pct": 200, "period": "dev", "color": "#2255e2" } },
                    "tasks": [ { "w": "1.1", "n": "…", "h": 80, "r": "core", "s": false, "d": 1, "rel": "322", "st": "done", "ws": "2026-09-21", "dn": "2026-09-30" } ],
                    "chk": { "1.1": true }, "linkedTo": "p2", "closed": false,
-                   "collapsed": {}, "filter": null, "filterActive": null, "folded": false, "colWidths": { "cb": 32, "h": 46, "r": 98, "name": 0, "del": 18 } } ]
+                   "collapsed": {}, "filter": null, "filterActive": null, "folded": false, "colWidths": { "cb": 32, "h": 46, "r": 98, "name": 0, "del": 26 } } ]
   }
   ```
 - **«📂 Загрузить конфигурацию»** принимает:

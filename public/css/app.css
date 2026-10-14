@@ -76,6 +76,7 @@ table.tree tr:hover td{background:#eef2f7!important}
 .rs:focus{outline:none;border-color:#0969da}
 .db{border:none;background:none;cursor:pointer;color:#cf222e;font-size:12px;padding:0 1px;opacity:0;line-height:1}
 tr:hover .db{opacity:1}
+table.tree td:last-child{padding:2px 0;text-align:center}
 .tog-btn{border:none;background:none;cursor:pointer;color:#656d76;font-size:11px;padding:0 2px 0 0;line-height:1;flex-shrink:0}
 .task-name-cell{cursor:pointer}
 .task-name-cell:hover .tname{color:#0969da;text-decoration:underline}
@@ -240,7 +241,7 @@ table.ut select{border:1px solid #d0d7de;border-radius:4px;padding:1px 3px;font-
 body:not(.admin) .admin-only{display:none!important}
 body.noproj .savebar,body.noproj #periodsContainer,body.noproj #btnAddPeriod,body.noproj #btnProjRename,body.noproj #btnProjDelete{display:none!important}
 /* статусы задач */
-.sts{border:1px solid #d0d7de;border-radius:10px;padding:0 4px;font-size:10px;font-family:inherit;width:100%;cursor:pointer;font-weight:600}
+.sts{border:1px solid #d0d7de;border-radius:10px;padding:0 4px;font-size:10px;font-family:inherit;width:100%;max-width:100%;box-sizing:border-box;cursor:pointer;font-weight:600}
 .sts-new{background:#f6f8fa;color:#57606a}
 .sts-wip{background:#fff8c5;color:#9a6700;border-color:#e3b341}
 .sts-done{background:#dafbe1;color:#1a7f37;border-color:#aceebb}
